@@ -26,8 +26,7 @@ class Board:
                       1,"sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"]
         self.board = self.base.copy()
         #局面履歴
-        self.history_base = [str(self.base[11:115])]
-        self.history = self.history_base.copy()
+        self.history = [str(self.base[11:115])]
         
     def sfen(self):
         sfen0 = "".join(self.board[11:100])
@@ -87,7 +86,6 @@ class Board:
     def set(self, position):
         position = position.split()
         self.board = self.base.copy()
-        self.history = self.history_base.copy()
         if "sfen" in position:
             sfen0 = position[position.index("sfen")+1]
             sfen0 = sfen0.replace('9', '000000000')\
@@ -161,6 +159,7 @@ class Board:
             sfen3 = position[position.index("sfen")+4]
             self.board[115] = int(sfen3)
             self.board[116] = " ".join(position[position.index("sfen"):position.index("sfen")+5])
+        self.history = [str(self.board[11:115])]
         if "moves" in position:
             moves = position[position.index("moves")+1:]
             for move in moves:
