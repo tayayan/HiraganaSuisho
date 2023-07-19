@@ -9,9 +9,8 @@ class Board:
         #100 手番
         #101～107 先手持駒
         #108～114 後手持駒
-        #115 手数
-        #116 初期配置
-        #117～ 棋譜
+        #115 千日手か否か
+        #116 手数
         self.base = ["","","","","","","","","","","",
                      "l","n","s","g","k","g","s","n","l","/",
                      "0","r","0","0","0","0","0","b","0","/",
@@ -23,10 +22,11 @@ class Board:
                      "0","B","0","0","0","0","0","R","0","/",
                      "L","N","S","G","K","G","S","N","L",1,
                       0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                      1,"sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"]
+                      False, 1]
         self.board = self.base.copy()
         #局面履歴
-        self.history = [str(self.base[11:115])]
+        self.hand = []
+        self.history = [self.base[11:116]]
         
     def sfen(self):
         sfen0 = "".join(self.board[11:100])
@@ -68,20 +68,26 @@ class Board:
                 sfen2 += str(piece.pop(0))
         if sfen2 == "":
             sfen2 = "-"
-        sfen3 = str(self.board[115])
+        sfen3 = str(self.board[116])
         return "sfen " + sfen0 + " " + sfen1 + " " + sfen2 + " " + sfen3
+
+    def position(self):
+        b = Board()
+        b.board[11:116] = self.history[0]
+        sfen = b.sfen()
+        if sfen == "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1":
+            sfen = "startpos"
+        position = "position " + sfen + " moves " + " ".join(self.hand)
+        return position
     
     def turn(self):
         return self.board[100]
-    
-    def ply(self):
-        return self.board[115]
 
+    def ply(self):
+        return self.board[116]
+    
     def is_sennichite(self):
-        if len(self.history) > len(set(self.history)):
-            return True
-        else:
-            return False
+        return self.board[115]
         
     def set(self, position):
         position = position.split()
@@ -155,11 +161,10 @@ class Board:
                         self.board[114] = p
                     sfen2 = sfen2[1:]
                     p = ""
-
             sfen3 = position[position.index("sfen")+4]
-            self.board[115] = int(sfen3)
-            self.board[116] = " ".join(position[position.index("sfen"):position.index("sfen")+5])
-        self.history = [str(self.board[11:115])]
+            self.board[116] = int(sfen3)        
+        self.hand = []
+        self.history = [self.board[11:116]]
         if "moves" in position:
             moves = position[position.index("moves")+1:]
             for move in moves:
@@ -246,20 +251,22 @@ class Board:
                 elif move[0] == "P":
                     self.board[114] -= 1
                 self.board[move_to] = move[0].lower()
-        self.board.append(move)
+        self.hand.append(move)
         self.board[100] *= -1
-        self.board[115] += 1
-        self.history.append(str(self.board[11:115]))
+        self.board[115] = False
+        self.board[116] += 1
+        if self.board[11:116] in self.history:
+            self.board[115] = True
+        self.history.append(self.board[11:116])
         
     def pop(self):
         if len(self.history) == 1:
             return
         else:
             del self.history[-1]
-            exec("self.board[11:115] = " + self.history[-1])
-            self.board[115] -= 1
-            del self.board[-1]
-            
+            self.board[11:116] = self.history[-1]
+            del self.hand[-1]
+            self.board[116] -= 1
             
     #合法手生成関係
     def direction_N(self, board_num):
