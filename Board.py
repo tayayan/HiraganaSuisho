@@ -25,7 +25,10 @@ class Board:
                       0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                       1,"sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"]
         self.board = self.base.copy()
-
+        #局面履歴
+        self.history_base = [str(self.base[11:115])]
+        self.history = self.history_base.copy()
+        
     def sfen(self):
         sfen0 = "".join(self.board[11:100])
         sfen0 = sfen0.replace('000000000','9')\
@@ -76,22 +79,15 @@ class Board:
         return self.board[115]
 
     def is_sennichite(self):
-        s = set()
-        b = Board()
-        b.set(self.board[116])
-        s.add(str(b.board[:114]))
-        moves = self.board[117:]
-        for move in moves:
-            n = len(s)
-            b.push(move)
-            s.add(str(b.board[:114]))
-            if n == len(s):
-                return True
-        return False
+        if len(self.history) > len(set(self.history)):
+            return True
+        else:
+            return False
         
     def set(self, position):
         position = position.split()
         self.board = self.base.copy()
+        self.history = self.history_base.copy()
         if "sfen" in position:
             sfen0 = position[position.index("sfen")+1]
             sfen0 = sfen0.replace('9', '000000000')\
@@ -254,14 +250,17 @@ class Board:
         self.board.append(move)
         self.board[100] *= -1
         self.board[115] += 1
+        self.history.append(str(self.board[11:115]))
         
     def pop(self):
-        del self.board[-1]
-        if len(self.board) > 117:
-            position = self.board[116] + " moves " + " ".join(self.board[117:])
-            self.set(position)
+        if len(self.history) == 1:
+            return
         else:
-            self.set(self.board[116])
+            del self.history[-1]
+            exec("self.board[11:115] = " + self.history[-1])
+            self.board[115] -= 1
+            del self.board[-1]
+            
             
     #合法手生成関係
     def direction_N(self, board_num):
