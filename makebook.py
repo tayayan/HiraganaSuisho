@@ -42,12 +42,19 @@ class Shogi:
         def usi(command): #usiコマンド処理
             shogi.stdin.write(command+"\n")
             shogi.stdin.flush()
+        
+        # (sfen, (score, move))
+        tt = dict()
 
         def minmax_in_book(board, book): #定跡内ミニマックス探索
             sfen = board.sfen()
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
             if sfen not in book:
                 return 0, None
+            
+            if sfen in tt:
+                return tt[sfen]
+
             moves = sorted(book[sfen].items(), key=lambda x:x[1], reverse=True) #訪問回数順に並べ替える
             for move in moves:
                 move = move[0]
@@ -61,6 +68,7 @@ class Shogi:
                     board.pop()
                     if score == 1: #勝つ枝が見つかればbreakしてよい（簡易的なアルファカット）
                         break            
+            tt[sfen] = (score, move)
             return score, move
 
         #将棋エンジン（やねうら王）を立ち上げる
@@ -158,9 +166,14 @@ class Shogi:
             board.push(bestmove)
 
 def makebook(book): #定跡dbファイル作成
+    # (sfen, score)
+    tt = dict()
+
     def minmax(board, book):                    
         sfen = board.sfen()
         sfen = sfen[:sfen.rindex(" ")+1] + "0"
+        if sfen in tt:
+            return tt[sfen]
         moves = sorted(book[sfen].items(), key=lambda x:x[1], reverse=True) 
         for move in moves:
             visit = move[1]
@@ -177,6 +190,7 @@ def makebook(book): #定跡dbファイル作成
                     if visit > 1: #訪問回数2回以上の枝を定跡にする。
                         mb.write(sfen + "\n" + move + " None 0 32 " + str(visit) + "\n")
                     break
+        tt[sfen] = score
         return score
     with Shogi.lock: #同期処理
         board = Board()
