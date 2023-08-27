@@ -3,6 +3,7 @@ import time
 import datetime
 import threading
 import subprocess
+import pickle
 
 #Copyright (c) tayayan
 #Released under the MIT license
@@ -14,7 +15,7 @@ class Shogi:
     endturn = None  #終局時の手番
     win = 0         #連勝数
     kif_total = 0   #連続対局数
-    task_on = 0     #同期処理用
+    lock = threading.Lock()
 
     #エンジンパス指定
     engine = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
@@ -87,9 +88,8 @@ class Shogi:
             sfen = board.sfen()
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
             #定跡内ミニマックス探索（本プログラムの核となる部分）
-            Shogi.task_on += 1 #同期処理用
-            score, move = minmax_in_book(board, Shogi.book)
-            Shogi.task_on -= 1
+            with Shogi.lock: #同期処理
+                score, move = minmax_in_book(board, Shogi.book)
             #定跡内の指し手に勝つ枝があればそれを指す
             if score == 1:
                 bestmove = move
@@ -106,57 +106,53 @@ class Shogi:
 
             tempkif.append(bestmove)  #棋譜一時保存
 
-            if bestmove == "resign": #投了処理
-                #連勝表記
-                if Shogi.endturn == board.turn():
-                    Shogi.win += 1
-                else:
-                    Shogi.win = 1
-                if board.turn() == -1:
-                    print(str(Shogi.win) + "連勝(先手)")
-                elif board.turn() == 1:
-                    print(str(Shogi.win) + "連勝(後手)")
-                Shogi.endturn = board.turn()
-                
-                while True: #同期処理（探索中に定跡を変更しない）
-                    if Shogi.task_on != 0:
-                        time.sleep(1)
+            with Shogi.lock: #同期処理
+                if bestmove == "resign": #投了処理
+                    #連勝表記
+                    if Shogi.endturn == board.turn():
+                        Shogi.win += 1
                     else:
-                        break
-                #定跡保存
-                for i in tempbook: #訪問回数を保存しつつ登録
-                    if i in Shogi.book:
-                        if tempbook[i] in Shogi.book[i]:
-                            Shogi.book[i][tempbook[i]] += 1
+                        Shogi.win = 1
+                    if board.turn() == -1:
+                        print(str(Shogi.win) + "連勝(先手)")
+                    elif board.turn() == 1:
+                        print(str(Shogi.win) + "連勝(後手)")
+                    Shogi.endturn = board.turn()
+                
+                    #定跡保存
+                    for i in tempbook: #訪問回数を保存しつつ登録
+                        if i in Shogi.book:
+                            if tempbook[i] in Shogi.book[i]:
+                                Shogi.book[i][tempbook[i]] += 1
+                            else:
+                                Shogi.book[i][tempbook[i]] = 1
                         else:
-                            Shogi.book[i][tempbook[i]] = 1
-                    else:
-                        Shogi.book[i] = {tempbook[i]:1}
-                end = 1
-                
-            elif board.is_sennichite(): #千日手処理
-                tempkif[-1] = "rep_draw"
-                Shogi.win = 0
-                print("千日手")
-                end = 1
+                            Shogi.book[i] = {tempbook[i]:1}
+                    end = 1
+                    
+                elif board.is_sennichite(): #千日手処理
+                        tempkif[-1] = "rep_draw"
+                        Shogi.win = 0
+                        print("千日手")
+                        end = 1
 
-            if end == 1: #終局処理
-                #棋譜保存
-                Shogi.kif.append(" ".join(tempkif))
-                #自動棋譜書き出し（100局毎に保存）
-                Shogi.kif_total += 1
-                if Shogi.kif_total % 100 == 0:
-                    print("makeautokif...")
-                    mk = open(Shogi.kiffile,"w")
-                    for k in Shogi.kif:
-                        mk.write(k + "\n")
-                    mk.close()
-                #初期化
-                tempkif = [Shogi.basesfen]
-                tempbook.clear()
-                board.set(Shogi.basesfen)
-                end = 0
-                continue
+                if end == 1: #終局処理
+                    #棋譜保存
+                    Shogi.kif.append(" ".join(tempkif))
+                    #自動棋譜書き出し（100局毎に保存）
+                    Shogi.kif_total += 1
+                    if Shogi.kif_total % 100 == 0:
+                        print("makeautokif...")
+                        mk = open(Shogi.kiffile,"w")
+                        for k in Shogi.kif:
+                            mk.write(k + "\n")
+                        mk.close()
+                    #初期化
+                    tempkif = [Shogi.basesfen]
+                    tempbook.clear()
+                    board.set(Shogi.basesfen)
+                    end = 0
+                    continue
                 
             #終局していないので1手進める
             board.push(bestmove)
@@ -182,13 +178,27 @@ def makebook(book): #定跡dbファイル作成
                         mb.write(sfen + "\n" + move + " None 0 32 " + str(visit) + "\n")
                     break
         return score
-    board = Board()
-    board.set(Shogi.basesfen)
-    mb = open(Shogi.bookfile,"w")
-    mb.write("#YANEURAOU-DB2016 1.00\n")
-    minmax(board, book)
-    mb.close()
-    print("makebookok")
+    with Shogi.lock: #同期処理
+        board = Board()
+        board.set(Shogi.basesfen)
+        mb = open(Shogi.bookfile,"w")
+        mb.write("#YANEURAOU-DB2016 1.00\n")
+        minmax(board, book)
+        mb.close()
+        print("makebookok")
+
+
+def savebook():
+    with Shogi.lock: #同期処理
+        with open('book.pickle', 'wb') as file:
+            pickle.dump(Shogi.book, file)
+
+
+def loadbook():
+    with Shogi.lock: #同期処理
+        with open('book.pickle', 'rb') as file:
+            Shogi.book = pickle.load(file)
+
 
 thread = int(input("並列対局数を入力してね（スレッド数÷4を最大値としてね）\n"))
 
@@ -197,6 +207,8 @@ for i in range(thread): #指定スレッド数だけインスタンスを立ち�
     exec("t" + str(i) + "=threading.Thread(target=shogi" + str(i) + ".play, daemon=True)")
     exec("t"+ str(i) +".start()")
     time.sleep(0.5)
+
+# loadbook()
 
 print("連続対局開始...")
 
@@ -212,3 +224,9 @@ while True:
     #定跡手動書き出し
     if a == "makebook":
         makebook(Shogi.book)
+    #保存
+    if a == "savebook":
+        savebook()
+    #読み込み
+    if a == "loadbook":
+        loadbook()
