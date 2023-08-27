@@ -151,10 +151,9 @@ class Shogi:
                     Shogi.kif_total += 1
                     if Shogi.kif_total % 100 == 0:
                         print("makeautokif...")
-                        mk = open(Shogi.kiffile,"w")
-                        for k in Shogi.kif:
-                            mk.write(k + "\n")
-                        mk.close()
+                        with open(Shogi.kiffile,"w") as mk:
+                            for k in Shogi.kif:
+                                mk.write(k + "\n")
                         savebook()
                     #初期化
                     tempkif = [Shogi.basesfen]
@@ -170,7 +169,7 @@ def makebook(book): #定跡dbファイル作成
     # (sfen, score)
     tt = dict()
 
-    def minmax(board, book):                    
+    def minmax(board, book, mb):                    
         sfen = board.sfen()
         sfen = sfen[:sfen.rindex(" ")+1] + "0"
         if sfen in tt:
@@ -185,7 +184,7 @@ def makebook(book): #定跡dbファイル作成
                 score = 0
             else:
                 board.push(move)
-                score = -minmax(board, book)
+                score = -minmax(board, book, mb)
                 board.pop()
                 if score == 1:
                     if visit > 1: #訪問回数2回以上の枝を定跡にする。
@@ -196,10 +195,9 @@ def makebook(book): #定跡dbファイル作成
     with Shogi.lock: #同期処理
         board = Board()
         board.set(Shogi.basesfen)
-        mb = open(Shogi.bookfile,"w")
-        mb.write("#YANEURAOU-DB2016 1.00\n")
-        minmax(board, book)
-        mb.close()
+        with open(Shogi.bookfile,"w") as mb:
+            mb.write("#YANEURAOU-DB2016 1.00\n")
+            minmax(board, book, mb)
         print("makebookok")
 
 
@@ -231,10 +229,9 @@ while True:
     a = input()
     #棋譜手動書き出し
     if a == "makekif":
-        mk = open(Shogi.kiffile,"w")
-        for k in Shogi.kif:
-            mk.write(k + "\n")
-        mk.close()
+        with open(Shogi.kiffile,"w") as mk:
+            for k in Shogi.kif:
+                mk.write(k + "\n")
         print("makekifok")
     #定跡手動書き出し
     if a == "makebook":
