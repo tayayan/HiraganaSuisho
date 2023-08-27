@@ -122,9 +122,9 @@ class Shogi:
                     else:
                         Shogi.win = 1
                     if board.turn() == -1:
-                        print(str(Shogi.win) + "連勝(先手)")
+                        print(f"{Shogi.win}連勝(先手) 連続対局数={Shogi.kif_total} 定跡データ局面数={len(Shogi.book)}")
                     elif board.turn() == 1:
-                        print(str(Shogi.win) + "連勝(後手)")
+                        print(f"{Shogi.win}連勝(後手) 連続対局数={Shogi.kif_total} 定跡データ局面数={len(Shogi.book)}")
                     Shogi.endturn = board.turn()
                 
                     #定跡保存
@@ -141,7 +141,7 @@ class Shogi:
                 elif board.is_sennichite(): #千日手処理
                         tempkif[-1] = "rep_draw"
                         Shogi.win = 0
-                        print("千日手")
+                        print(f"千日手 連続対局数={Shogi.kif_total} 定跡データ局面数={len(Shogi.book)}")
                         end = 1
 
                 if end == 1: #終局処理
