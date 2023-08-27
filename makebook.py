@@ -15,7 +15,7 @@ class Shogi:
     endturn = None  #終局時の手番
     win = 0         #連勝数
     kif_total = 0   #連続対局数
-    lock = threading.Lock()
+    lock = threading.RLock()
 
     #エンジンパス指定
     engine = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
@@ -155,6 +155,7 @@ class Shogi:
                         for k in Shogi.kif:
                             mk.write(k + "\n")
                         mk.close()
+                        savebook()
                     #初期化
                     tempkif = [Shogi.basesfen]
                     tempbook.clear()
