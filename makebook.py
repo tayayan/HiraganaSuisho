@@ -163,9 +163,6 @@ class Shogi:
             board.push(bestmove)
 
 def makebook(book): #定跡dbファイル作成
-    # (sfen, score)
-    tt = dict()
-
     def minmax(board, book, mb, tt):                    
         sfen = board.sfen()
         sfen = sfen[:sfen.rindex(" ")+1] + "0"
