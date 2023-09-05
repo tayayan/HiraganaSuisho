@@ -43,10 +43,7 @@ class Shogi:
             shogi.stdin.write(command+"\n")
             shogi.stdin.flush()
         
-        # (sfen, (score, move))
-        tt = dict()
-
-        def minmax_in_book(board, book): #定跡内ミニマックス探索
+        def minmax_in_book(board, book, tt): #定跡内ミニマックス探索
             sfen = board.sfen()
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
             if sfen not in book:
@@ -64,7 +61,7 @@ class Shogi:
                     score = 0
                 else:
                     board.push(move)
-                    score = -minmax_in_book(board, book)[0]
+                    score = -minmax_in_book(board, book, tt)[0]
                     board.pop()
                     if score == 1: #勝つ枝が見つかればbreakしてよい（簡易的なアルファカット）
                         break            
@@ -97,7 +94,7 @@ class Shogi:
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
             #定跡内ミニマックス探索（本プログラムの核となる部分）
             with Shogi.lock: #同期処理
-                score, move = minmax_in_book(board, Shogi.book)
+                score, move = minmax_in_book(board, Shogi.book, dict())
             #定跡内の指し手に勝つ枝があればそれを指す
             if score == 1:
                 bestmove = move
@@ -169,7 +166,7 @@ def makebook(book): #定跡dbファイル作成
     # (sfen, score)
     tt = dict()
 
-    def minmax(board, book, mb):                    
+    def minmax(board, book, mb, tt):                    
         sfen = board.sfen()
         sfen = sfen[:sfen.rindex(" ")+1] + "0"
         if sfen in tt:
@@ -184,7 +181,7 @@ def makebook(book): #定跡dbファイル作成
                 score = 0
             else:
                 board.push(move)
-                score = -minmax(board, book, mb)
+                score = -minmax(board, book, mb, tt)
                 board.pop()
                 if score == 1:
                     if visit > 1: #訪問回数2回以上の枝を定跡にする。
@@ -197,7 +194,7 @@ def makebook(book): #定跡dbファイル作成
         board.set(Shogi.basesfen)
         with open(Shogi.bookfile,"w") as mb:
             mb.write("#YANEURAOU-DB2016 1.00\n")
-            minmax(board, book, mb)
+            minmax(board, book, mb, dict())
         print("makebookok")
 
 
