@@ -21,7 +21,7 @@ class Shogi:
     engine = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
     
     #初期局面（ここから連続対局する）
-    basesfen = input("usi棋譜（position startposから始まる文字列）を入力してね\n")
+    basesfen = input("usi棋譜（position startposから始まる文字列）を入力してね。入力しなければ平手初期局面\n")
     basesfen = basesfen[9:]
     if len(basesfen) < 13:
         basesfen = "startpos moves"
@@ -62,6 +62,7 @@ class Shogi:
     d = now.strftime('%Y%m%d%H%M%S')
     kiffile = "kif" + d + ".sfen"
     bookfile = "book" + d + ".db"
+    bookfile2 = "book" + d + "_2.db"
 
     def play(self):
         def usi(command): #usiコマンド処理
@@ -203,6 +204,10 @@ class Shogi:
 
 thread = int(input("並列対局数を入力してね（スレッド数÷4を最大値としてね）\n"))
 
+print("\n「makekif」  コマンド：現在までの棋譜ファイル手動作成")
+print("「makebook」 コマンド：現在までの定跡ファイル手動作成")
+print("「makebook2」コマンド：現在までの定跡ファイル手動作成、訪問回数2回以上・上位の手のみを記録\n")
+
 for i in range(thread): #指定スレッド数だけインスタンスを立ち上げる
     exec("shogi" + str(i) + "=Shogi()")
     exec("t" + str(i) + "=threading.Thread(target=shogi" + str(i) + ".play, daemon=True)")
@@ -237,13 +242,12 @@ while True:
 
     if a == "makebook2":
         with Shogi.lock:
-            mb = open(Shogi.bookfile,"w")
+            mb = open(Shogi.bookfile2,"w")
             mb.write("#YANEURAOU-DB2016 1.00\n")
             for b in Shogi.book:                
                 moves = sorted(Shogi.book[b].items(), key=lambda x:x[1], reverse=True)
                 if moves[0][1] > 1:
                     mb.write(b + "\n")
-                    for move in moves:
-                        mb.write(move[0] + " none 0 32 " + str(move[1]) + "\n")
+                    mb.write(moves[0][0] + " none 0 32 " + str(moves[0][1]) + "\n")
             mb.close()
             print("makebook2ok")
