@@ -23,7 +23,7 @@ class Board:
         self.board = self.base.copy()
         #局面履歴
         self.hand = []
-        self.history = [self.base[11:114]]
+        self.history = [self.base[11:115]]
         if position is not None:
             self.set(position)
         
@@ -72,7 +72,7 @@ class Board:
 
     def position(self):
         b = Board()
-        b.board[11:114] = self.history[0]
+        b.board[11:115] = self.history[0]
         sfen = b.sfen()
         if sfen == "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1":
             sfen = "startpos"
@@ -86,7 +86,7 @@ class Board:
         return len(self.history)
     
     def is_sennichite(self):
-        return self.board[11:114] in self.history[:-1]
+        return self.board[11:115] in self.history[:-1]
         
     def set(self, position):
         position = position.split()
@@ -161,7 +161,7 @@ class Board:
                     sfen2 = sfen2[1:]
                     p = ""
         self.hand = []
-        self.history = [self.board[11:114]]
+        self.history = [self.board[11:115]]
         if "moves" in position:
             moves = position[position.index("moves")+1:]
             for move in moves:
@@ -250,14 +250,14 @@ class Board:
                 self.board[move_to] = move[0].lower()
         self.hand.append(move)
         self.board[100] *= -1
-        self.history.append(self.board[11:114])
+        self.history.append(self.board[11:115])
         
     def pop(self):
         if len(self.history) == 1:
             return
         else:
             del self.history[-1]
-            self.board[11:114] = self.history[-1]
+            self.board[11:115] = self.history[-1]
             del self.hand[-1]
             
     #合法手生成関係
