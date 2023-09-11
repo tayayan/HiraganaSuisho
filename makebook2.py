@@ -11,6 +11,7 @@ import subprocess
 
 class Shogi:
     book = dict()   #定跡データ
+    book0 = None
     kif = list()    #棋譜データ
     endturn = None  #終局時の手番
     win = 0         #連勝数
@@ -25,11 +26,18 @@ class Shogi:
     basesfen = basesfen[9:]
     if len(basesfen) < 13:
         basesfen = "startpos moves"
+    else:
+        bookboard = Board()
+        for i in basesfen.split()[2:]:
+            sfen = bookboard.sfen()
+            sfen = sfen[:sfen.rindex(" ")+1] + "0"
+            book[sfen] = {i:1000}
+            bookboard.push(i)
 
     #定跡読み込み
     readbook = input("やねうら王dbファイルをロードする場合、パスを入力してね（例：standard_book.db）\n")
     if readbook[-3:] == ".db":
-        rfile = open(readbook,"r")
+        rfile = open(readbook,"r", errors='ignore')
         s = rfile.readline() #「#YANEURAOU-DB2016 1.00」をスキップ
         while True:
             s = rfile.readline().strip()
@@ -45,6 +53,14 @@ class Shogi:
                 book[sfen][move] = 1
             else:
                 book[sfen] = {move:1}
+                
+        book_fix = input("定跡の穴探索モード？ b:先手定跡の穴を探す w:後手定跡の穴を探す それ以外:通常モード\n")
+        if book_fix == "b" or book_fix == "w":
+            book0 = dict()
+            for i in book:
+                if i.split()[-3] == book_fix:
+                    book0[i] = book[i]
+            book = dict()
 
     #探索ノード数
     nodes = input("探索ノード数を入力してね（例：20000000）\n")
@@ -72,7 +88,7 @@ class Shogi:
         #将棋エンジン（やねうら王）を立ち上げる
         shogi = subprocess.Popen(Shogi.engine, stdin=subprocess.PIPE,
                                                stdout=subprocess.PIPE,
-                                               encoding="UTF-8")
+                                               encoding="cp932")
 
         #初期オプション指定
         usi("setoption name Threads value 4") #1スレッドが一番効率いいけど、同じ棋譜が生じやすいので4とする
@@ -93,7 +109,9 @@ class Shogi:
         while True: #連続対局
             sfen = board.sfen()
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
-            if sfen in Shogi.book:
+            if Shogi.book0 is not None and sfen in Shogi.book0:
+                bestmove = random.choice(list(Shogi.book0[sfen].keys()))
+            elif sfen in Shogi.book:
                 bestmove = random.choice(list(Shogi.book[sfen].keys())) #複数候補がある場合はランダムで選ぶ
             #なければ探索して指す
             else:
