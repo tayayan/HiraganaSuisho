@@ -234,6 +234,47 @@ for i in range(thread): #指定スレッド数だけインスタンスを立ち�
 
 print("連続対局開始...")
 
+
+def book_to_sfen(book): #定跡データを棋譜化する
+    kif = ["startpos moves"]
+    board = Board()
+    sfen = board.sfen()
+    sfen = sfen[:sfen.rindex(" ")+1] + "0"
+    wfile = open(input("sfenファイル保存名を入力してね\n"), "w")
+
+    def dfs(sfen):
+        nonlocal kif, wfile
+        if board.is_sennichite():
+            wfile.write(" ".join(kif) + "\n")
+        
+        if sfen in book:
+            move = book[sfen]
+            kif.append(move)
+            board.push(move)
+            sfen = board.sfen()
+            sfen = sfen[:sfen.rindex(" ")+1] + "0"
+            dfs(sfen)
+            board.pop()           
+            kif = kif[:-1]
+                
+        else:
+            moves = board.legal_moves()
+            a = 0
+            for move in moves:
+                board.push(move)
+                sfen = board.sfen()
+                sfen = sfen[:sfen.rindex(" ")+1] + "0"
+                if sfen in book:
+                    kif.append(move)
+                    dfs(sfen)
+                    kif = kif[:-1]
+                    a = 1
+                board.pop()
+            if a == 0:
+                wfile.write(" ".join(kif) + "\n")    
+    dfs(sfen)
+    wfile.close()
+
 while True:
     a = input()
     #棋譜手動書き出し
@@ -244,6 +285,29 @@ while True:
                 mk.write(k + "\n")
             mk.close()
             print("makekifok")
+
+    #最善手棋譜書き出し
+    if a == "makekifb":
+        with Shogi.lock:
+            d = dict()
+            for i in Shogi.book:
+                if i.split()[-3] == "b":
+                    moves = sorted(Shogi.book[i].items(), key=lambda x:x[1], reverse=True)
+                    if moves[0][1] > 1:
+                        d[i] = moves[0][0]
+            book_to_sfen(d)                        
+            print("makekifbok")
+
+    if a == "makekifw":
+        with Shogi.lock:
+            d = dict()
+            for i in Shogi.book:
+                if i.split()[-3] == "w":
+                    moves = sorted(Shogi.book[i].items(), key=lambda x:x[1], reverse=True)
+                    if moves[0][1] > 1:
+                        d[i] = moves[0][0]
+            book_to_sfen(d)                        
+            print("makekifbok")
 
     #定跡手動書き出し
     if a == "makebook":
