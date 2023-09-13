@@ -20,19 +20,6 @@ class Shogi:
 
     #エンジンパス指定
     engine = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
-    
-    #初期局面（ここから連続対局する）
-    basesfen = input("usi棋譜（position startposから始まる文字列）を入力してね。入力しなければ平手初期局面\n")
-    basesfen = basesfen[9:]
-    if len(basesfen) < 13:
-        basesfen = "startpos moves"
-    else:
-        bookboard = Board()
-        for i in basesfen.split()[2:]:
-            sfen = bookboard.sfen()
-            sfen = sfen[:sfen.rindex(" ")+1] + "0"
-            book[sfen] = {i:1000}
-            bookboard.push(i)
 
     #定跡読み込み
     readbook = input("やねうら王dbファイルをロードする場合、パスを入力してね（例：standard_book.db）\n")
@@ -61,6 +48,19 @@ class Shogi:
                 if i.split()[-3] == book_fix:
                     book0[i] = book[i]
             book = dict()
+    
+    #初期局面（ここから連続対局する）
+    basesfen = input("usi棋譜（position startposから始まる文字列）を入力してね。入力しなければ平手初期局面\n")
+    basesfen = basesfen[9:]
+    if len(basesfen) < 13:
+        basesfen = "startpos moves"
+    else:
+        bookboard = Board()
+        for i in basesfen.split()[2:]:
+            sfen = bookboard.sfen()
+            sfen = sfen[:sfen.rindex(" ")+1] + "0"
+            book[sfen] = {i:1000}
+            bookboard.push(i)
 
     #探索ノード数
     nodes = input("探索ノード数を入力してね（例：20000000）\n")
@@ -307,7 +307,7 @@ while True:
                     if moves[0][1] > 1:
                         d[i] = moves[0][0]
             book_to_sfen(d)                        
-            print("makekifbok")
+            print("makekifwok")
 
     #定跡手動書き出し
     if a == "makebook":
