@@ -241,19 +241,24 @@ def book_to_sfen(book): #定跡データを棋譜化する
     sfen = board.sfen()
     sfen = sfen[:sfen.rindex(" ")+1] + "0"
     wfile = open(input("sfenファイル保存名を入力してね\n"), "w")
+    tt = set()
 
     def dfs(sfen):
-        nonlocal kif, wfile
+        nonlocal kif, wfile, tt
         if board.is_sennichite():
             wfile.write(" ".join(kif) + "\n")
         
-        if sfen in book:
+        elif sfen in book:
             move = book[sfen]
             kif.append(move)
             board.push(move)
             sfen = board.sfen()
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
-            dfs(sfen)
+            if sfen in tt:
+                wfile.write(" ".join(kif) + "\n")
+            else:
+                dfs(sfen)
+                tt.add(sfen)
             board.pop()           
             kif = kif[:-1]
                 
@@ -266,12 +271,17 @@ def book_to_sfen(book): #定跡データを棋譜化する
                 sfen = sfen[:sfen.rindex(" ")+1] + "0"
                 if sfen in book:
                     kif.append(move)
-                    dfs(sfen)
+                    if sfen in tt:
+                        wfile.write(" ".join(kif) + "\n")
+                    else:
+                        dfs(sfen)
                     kif = kif[:-1]
                     a = 1
                 board.pop()
+            tt.add(sfen)
             if a == 0:
                 wfile.write(" ".join(kif) + "\n")    
+
     dfs(sfen)
     wfile.close()
 
