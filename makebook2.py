@@ -161,7 +161,7 @@ class Shogi:
                                     Shogi.book.pop(i[0])
                                 else:
                                     bookpass = 1
-                        elif i[0].split()[-3] != loseturn:
+                        else:
                             if i[0] in Shogi.book:
                                 if i[1] in Shogi.book[i[0]]:
                                     Shogi.book[i[0]][i[1]] += 1
@@ -188,7 +188,7 @@ class Shogi:
                                         Shogi.book.pop(i[0])
                                     else:
                                         bookpass = 1
-                            elif i[0].split()[-3] != loseturn:
+                            else:
                                 if i[0] in Shogi.book:
                                     if i[1] in Shogi.book[i[0]]:
                                         Shogi.book[i[0]][i[1]] += 1
