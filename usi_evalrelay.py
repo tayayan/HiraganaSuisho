@@ -26,9 +26,10 @@ def output(): #エンジン1の出力
         line = shogi.stdout.readline()
         if line[:8] == "bestmove": #bestmoveが出力されたとき、直前の評価値を読み、1500以上であればエンジンを切り替える
             line0 = line0.split()
-            score = int(line0[line0.index("cp")+1])
-            if score >= 1500:
-                Relay.switch = 1
+            if "cp" in line0:
+                score = int(line0[line0.index("cp")+1])
+                if score >= 1500:
+                    Relay.switch = 1
         line0 = line
         print(line, end="", flush=True)
 
