@@ -1,6 +1,7 @@
 #評価値を閾値にしたusiリレープログラム
 
 import os
+import time
 import subprocess
 import threading
 
@@ -65,4 +66,6 @@ while True:
     if command[:8] == "gameover": #対局終了時にエンジンを戻す
         Relay.switch = 0
     if command == "quit":
+        while shogi.poll() is None or shogi2.poll() is None:
+            time.sleep(0.5)
         quit()
