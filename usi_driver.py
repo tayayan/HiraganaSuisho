@@ -1,5 +1,6 @@
 #USIと標準入出力を介してやりとりするプログラム
 
+import time
 import subprocess
 import threading
 
@@ -24,4 +25,6 @@ while True:
     command = input()
     usi(command)
     if command == "quit":
+        while shogi.poll() is None:
+            time.sleep(0.5)
         quit()
