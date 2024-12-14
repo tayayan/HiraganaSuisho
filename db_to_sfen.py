@@ -81,7 +81,7 @@ def db_to_sfen(book):
 db = input("やねうら王dbファイルのパスを入力してね\n")
 side = input("先手番定跡のみをsfen化：b 後手番定跡のみをsfen化：w それ以外：入力なし\n")
 
-rfile = open(db,"r")
+rfile = open(db,"r",errors='ignore')
 s = rfile.readline() #「#YANEURAOU-DB2016 1.00」をスキップ
 
 book = dict()
