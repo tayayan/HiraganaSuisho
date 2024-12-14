@@ -1,3 +1,5 @@
+#やねうら王定跡dbファイルを初期局面からのsfen群に変換するプログラム。
+
 from Board import *
 import sys
 
@@ -9,7 +11,7 @@ def db_to_sfen(book):
     board = Board()
     sfen = board.sfen()
     sfen = sfen[:sfen.rindex(" ")+1] + "0"
-    wfile = open(input("新規sfenファイル名を入力してね"), "w")
+    wfile = open(input("新規sfenファイル名を入力してね\n"), "w")
     s = set()
     w = 0
 
@@ -76,7 +78,8 @@ def db_to_sfen(book):
     wfile.close()
 
 
-db = input("やねうら王dbファイルのパスを入力してね")
+db = input("やねうら王dbファイルのパスを入力してね\n")
+side = input("先手番定跡のみをsfen化：b 後手番定跡のみをsfen化：w それ以外：入力なし\n")
 
 rfile = open(db,"r")
 s = rfile.readline() #「#YANEURAOU-DB2016 1.00」をスキップ
@@ -92,10 +95,12 @@ while True:
         continue
     else:
         move = s.split()[0]
-        if sfen in book:
+        if (side == "b" and " w " in sfen) or (side == "w" and " b " in sfen):
+            continue
+        elif sfen in book:
             book[sfen].add(move)
         else:
             book[sfen] = {move}
             
 db_to_sfen(book)
-input("完了！")
+input("完了！\n")
