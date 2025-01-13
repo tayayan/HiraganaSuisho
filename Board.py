@@ -173,8 +173,12 @@ class Board:
         return num
     
     def sfen_num(self, board_num):
-        num = str(10 - int(board_num[1])) + board_num[0].translate(str.maketrans({'1':'a','2':'b','3':'c','4':'d','5':'e','6':'f','7':'g','8':'h','9':'i'}))
+        num = str(10 - int(str(board_num)[1])) + str(board_num)[0].translate(str.maketrans({'1':'a','2':'b','3':'c','4':'d','5':'e','6':'f','7':'g','8':'h','9':'i'}))
         return num
+
+    def piece_location(self, piece):
+        l = [i for i, x in enumerate(self.board) if x == piece]
+        return l
     
     def push(self, move):
         if move[1] != "*":
@@ -566,7 +570,7 @@ class Board:
                         continue
                     self.board[int(move[:2])] = self.board[int(move[2:4])]
                     self.board[int(move[2:4])] = piece
-                    s.add(self.sfen_num(move[:2]) + self.sfen_num(move[2:4]) + move[4:])
+                    s.add(self.sfen_num(int(move[:2])) + self.sfen_num(int(move[2:4])) + move[4:])
             p = set()
             for i in range(100):
                 if self.board[i] == "0":
@@ -578,7 +582,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("R*"+self.sfen_num(str(i)))
+                    s.add("R*"+self.sfen_num(i))
             if self.board[102] != 0:
                 for i in p:
                     self.board[i] = "Q"
@@ -586,7 +590,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("B*"+self.sfen_num(str(i)))
+                    s.add("B*"+self.sfen_num(i))
             if self.board[103] != 0:
                 for i in p:
                     self.board[i] = "Q"
@@ -594,7 +598,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("G*"+self.sfen_num(str(i)))
+                    s.add("G*"+self.sfen_num(i))
             if self.board[104] != 0:
                 for i in p:
                     self.board[i] = "Q"
@@ -602,7 +606,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("S*"+self.sfen_num(str(i)))
+                    s.add("S*"+self.sfen_num(i))
             if self.board[105] != 0:
                 for i in p:
                     if i > 30:
@@ -611,7 +615,7 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("N*"+self.sfen_num(str(i)))
+                        s.add("N*"+self.sfen_num(i))
             if self.board[106] != 0:
                 for i in p:
                     if i > 20:
@@ -620,7 +624,7 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("L*"+self.sfen_num(str(i)))
+                        s.add("L*"+self.sfen_num(i))
             if self.board[107] != 0:
                 for i in range(100):
                     if self.board[i] == "P":
@@ -645,7 +649,7 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("P*"+self.sfen_num(str(i)))
+                        s.add("P*"+self.sfen_num(i))
         elif self.turn() == -1:
             for move in self.white_move():
                 if not self.board[int(move[2:4])].islower():
@@ -658,7 +662,7 @@ class Board:
                         continue
                     self.board[int(move[:2])] = self.board[int(move[2:4])]
                     self.board[int(move[2:4])] = piece
-                    s.add(self.sfen_num(move[:2]) + self.sfen_num(move[2:4]) + move[4:])
+                    s.add(self.sfen_num(int(move[:2])) + self.sfen_num(int(move[2:4])) + move[4:])
             p = set()
             for i in range(100):
                 if self.board[i] == "0":
@@ -670,7 +674,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("R*"+self.sfen_num(str(i)))
+                    s.add("R*"+self.sfen_num(i))
             if self.board[109] != 0:
                 for i in p:
                     self.board[i] = "q"
@@ -678,7 +682,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("B*"+self.sfen_num(str(i)))
+                    s.add("B*"+self.sfen_num(i))
             if self.board[110] != 0:
                 for i in p:
                     self.board[i] = "q"
@@ -686,7 +690,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("G*"+self.sfen_num(str(i)))
+                    s.add("G*"+self.sfen_num(i))
             if self.board[111] != 0:
                 for i in p:
                     self.board[i] = "q"
@@ -694,7 +698,7 @@ class Board:
                         self.board[i] = "0"
                         continue
                     self.board[i] = "0"
-                    s.add("S*"+self.sfen_num(str(i)))
+                    s.add("S*"+self.sfen_num(i))
             if self.board[112] != 0:
                 for i in p:
                     if i < 80:
@@ -703,7 +707,7 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("N*"+self.sfen_num(str(i)))
+                        s.add("N*"+self.sfen_num(i))
             if self.board[113] != 0:
                 for i in p:
                     if i < 90:
@@ -712,7 +716,7 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("L*"+self.sfen_num(str(i)))
+                        s.add("L*"+self.sfen_num(i))
             if self.board[114] != 0:
                 for i in range(100):
                     if self.board[i] == "p":
@@ -737,7 +741,19 @@ class Board:
                             self.board[i] = "0"
                             continue
                         self.board[i] = "0"
-                        s.add("P*"+self.sfen_num(str(i)))
+                        s.add("P*"+self.sfen_num(i))
         return s
 
-
+    #利きを数え上げる
+    def piece_attack(self, turn = None):
+        l = [0] * 100
+        b = Board()
+        b.board = self.board.copy()
+        if turn is not None:
+            b.board[100] = turn
+        for i in b.legal_moves():
+            if i[1] == "*" or len(i) == 5:
+                continue
+            else:
+                l[self.board_num(i[2:4])] += 1
+        return l
