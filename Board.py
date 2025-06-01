@@ -6,9 +6,9 @@ class Board:
     def __init__(self, position = None):
         #0～10 空欄
         #11～99 盤面
-        #100 手番
-        #101～107 先手持駒
-        #108～114 後手持駒
+        #100～106 先手持駒
+        #107～113 後手持駒
+        #114 手番(1:先手, -1:後手)
         self.base = ["","","","","","","","","","","",
                      "l","n","s","g","k","g","s","n","l","/",
                      "0","r","0","0","0","0","0","b","0","/",
@@ -18,8 +18,8 @@ class Board:
                      "0","0","0","0","0","0","0","0","0","/",
                      "P","P","P","P","P","P","P","P","P","/",
                      "0","B","0","0","0","0","0","R","0","/",
-                     "L","N","S","G","K","G","S","N","L",1,
-                      0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                     "L","N","S","G","K","G","S","N","L",
+                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
         self.board = self.base.copy()
         #局面履歴
         self.hand = []
@@ -38,25 +38,25 @@ class Board:
                      .replace('000','3')\
                      .replace('00','2')\
                      .replace('0','1')        
-        sfen1 = self.board[100]
+        sfen1 = self.board[114]
         if sfen1 == 1:
             sfen1 = "b"
         elif sfen1 == -1:
             sfen1 = "w"
-        piece = [self.board[101],"R",
-                 self.board[102],"B",
-                 self.board[103],"G",
-                 self.board[104],"S",
-                 self.board[105],"N",
-                 self.board[106],"L",
-                 self.board[107],"P",
-                 self.board[108],"r",
-                 self.board[109],"b",
-                 self.board[110],"g",
-                 self.board[111],"s",
-                 self.board[112],"n",
-                 self.board[113],"l",
-                 self.board[114],"p"]
+        piece = [self.board[100],"R",
+                 self.board[101],"B",
+                 self.board[102],"G",
+                 self.board[103],"S",
+                 self.board[104],"N",
+                 self.board[105],"L",
+                 self.board[106],"P",
+                 self.board[107],"r",
+                 self.board[108],"b",
+                 self.board[109],"g",
+                 self.board[110],"s",
+                 self.board[111],"n",
+                 self.board[112],"l",
+                 self.board[113],"p"]
         sfen2 = ""
         while piece != []:
             if piece[0] == 0:
@@ -80,7 +80,7 @@ class Board:
         return position
     
     def turn(self):
-        return self.board[100]
+        return self.board[114]
 
     def ply(self):
         return len(self.history)
@@ -114,9 +114,9 @@ class Board:
                 
             sfen1 = position[position.index("sfen")+2]
             if sfen1 == "b":
-                self.board[100] = 1
+                self.board[114] = 1
             elif sfen1 == "w":
-                self.board[100] = -1
+                self.board[114] = -1
 
             sfen2 = position[position.index("sfen")+3]
             if sfen2 != "-":
@@ -131,33 +131,33 @@ class Board:
                     else:
                         p = int(p)
                     if sfen2[0] == "R":
-                        self.board[101] = p
+                        self.board[100] = p
                     elif sfen2[0] == "B":
-                        self.board[102] = p
+                        self.board[101] = p
                     elif sfen2[0] == "G":
-                        self.board[103] = p
+                        self.board[102] = p
                     elif sfen2[0] == "S":
-                        self.board[104] = p
+                        self.board[103] = p
                     elif sfen2[0] == "N":
-                        self.board[105] = p
+                        self.board[104] = p
                     elif sfen2[0] == "L":
-                        self.board[106] = p
+                        self.board[105] = p
                     elif sfen2[0] == "P":
-                        self.board[107] = p
+                        self.board[106] = p
                     elif sfen2[0] == "r":
-                        self.board[108] = p
+                        self.board[107] = p
                     elif sfen2[0] == "b":
-                        self.board[109] = p
+                        self.board[108] = p
                     elif sfen2[0] == "g":
-                        self.board[110] = p
+                        self.board[109] = p
                     elif sfen2[0] == "s":
-                        self.board[111] = p
+                        self.board[110] = p
                     elif sfen2[0] == "n":
-                        self.board[112] = p
+                        self.board[111] = p
                     elif sfen2[0] == "l":
-                        self.board[113] = p
+                        self.board[112] = p
                     elif sfen2[0] == "p":
-                        self.board[114] = p
+                        self.board[113] = p
                     sfen2 = sfen2[1:]
                     p = ""
         self.hand = []
@@ -186,33 +186,33 @@ class Board:
             move_to = self.board_num(move[2:4])
             if self.board[move_to] != "0":
                 if self.board[move_to][-1] == "r":
-                    self.board[101] += 1
+                    self.board[100] += 1
                 elif self.board[move_to][-1] == "b":
-                    self.board[102] += 1
+                    self.board[101] += 1
                 elif self.board[move_to][-1] == "g":
-                    self.board[103] += 1
+                    self.board[102] += 1
                 elif self.board[move_to][-1] == "s":
-                    self.board[104] += 1
+                    self.board[103] += 1
                 elif self.board[move_to][-1] == "n":
-                    self.board[105] += 1
+                    self.board[104] += 1
                 elif self.board[move_to][-1] == "l":
-                    self.board[106] += 1
+                    self.board[105] += 1
                 elif self.board[move_to][-1] == "p":
-                    self.board[107] += 1
+                    self.board[106] += 1
                 elif self.board[move_to][-1] == "R":
-                    self.board[108] += 1
+                    self.board[107] += 1
                 elif self.board[move_to][-1] == "B":
-                    self.board[109] += 1
+                    self.board[108] += 1
                 elif self.board[move_to][-1] == "G":
-                    self.board[110] += 1
+                    self.board[109] += 1
                 elif self.board[move_to][-1] == "S":
-                    self.board[111] += 1
+                    self.board[110] += 1
                 elif self.board[move_to][-1] == "N":
-                    self.board[112] += 1
+                    self.board[111] += 1
                 elif self.board[move_to][-1] == "L":
-                    self.board[113] += 1
+                    self.board[112] += 1
                 elif self.board[move_to][-1] == "P":
-                    self.board[114] += 1
+                    self.board[113] += 1
             if move[-1] == "+":
                 self.board[move_to] = "+" + self.board[move_from]
             else:
@@ -222,38 +222,38 @@ class Board:
             move_to = self.board_num(move[2:4])
             if self.turn() == 1:
                 if move[0] == "R":
-                    self.board[101] -= 1
+                    self.board[100] -= 1
                 elif move[0] == "B":
-                    self.board[102] -= 1
+                    self.board[101] -= 1
                 elif move[0] == "G":
-                    self.board[103] -= 1
+                    self.board[102] -= 1
                 elif move[0] == "S":
-                    self.board[104] -= 1
+                    self.board[103] -= 1
                 elif move[0] == "N":
-                    self.board[105] -= 1
+                    self.board[104] -= 1
                 elif move[0] == "L":
-                    self.board[106] -= 1
+                    self.board[105] -= 1
                 elif move[0] == "P":
-                    self.board[107] -= 1
+                    self.board[106] -= 1
                 self.board[move_to] = move[0]
             elif self.turn() == -1:
                 if move[0] == "R":
-                    self.board[108] -= 1
+                    self.board[107] -= 1
                 elif move[0] == "B":
-                    self.board[109] -= 1
+                    self.board[108] -= 1
                 elif move[0] == "G":
-                    self.board[110] -= 1
+                    self.board[109] -= 1
                 elif move[0] == "S":
-                    self.board[111] -= 1
+                    self.board[110] -= 1
                 elif move[0] == "N":
-                    self.board[112] -= 1
+                    self.board[111] -= 1
                 elif move[0] == "L":
-                    self.board[113] -= 1
+                    self.board[112] -= 1
                 elif move[0] == "P":
-                    self.board[114] -= 1
+                    self.board[113] -= 1
                 self.board[move_to] = move[0].lower()
         self.hand.append(move)
-        self.board[100] *= -1
+        self.board[114] *= -1
         self.history.append(self.board[11:115])
         
     def pop(self):
@@ -575,7 +575,7 @@ class Board:
             for i in range(100):
                 if self.board[i] == "0":
                     p.add(i)
-            if self.board[101] != 0:
+            if self.board[100] != 0:
                 for i in p:
                     self.board[i] = "Q"
                     if self.is_check_bking():
@@ -583,7 +583,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("R*"+self.sfen_num(i))
-            if self.board[102] != 0:
+            if self.board[101] != 0:
                 for i in p:
                     self.board[i] = "Q"
                     if self.is_check_bking():
@@ -591,7 +591,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("B*"+self.sfen_num(i))
-            if self.board[103] != 0:
+            if self.board[102] != 0:
                 for i in p:
                     self.board[i] = "Q"
                     if self.is_check_bking():
@@ -599,7 +599,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("G*"+self.sfen_num(i))
-            if self.board[104] != 0:
+            if self.board[103] != 0:
                 for i in p:
                     self.board[i] = "Q"
                     if self.is_check_bking():
@@ -607,7 +607,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("S*"+self.sfen_num(i))
-            if self.board[105] != 0:
+            if self.board[104] != 0:
                 for i in p:
                     if i > 30:
                         self.board[i] = "Q"
@@ -616,7 +616,7 @@ class Board:
                             continue
                         self.board[i] = "0"
                         s.add("N*"+self.sfen_num(i))
-            if self.board[106] != 0:
+            if self.board[105] != 0:
                 for i in p:
                     if i > 20:
                         self.board[i] = "Q"
@@ -625,7 +625,7 @@ class Board:
                             continue
                         self.board[i] = "0"
                         s.add("L*"+self.sfen_num(i))
-            if self.board[107] != 0:
+            if self.board[106] != 0:
                 for i in range(100):
                     if self.board[i] == "P":
                         n = i % 10
@@ -637,11 +637,11 @@ class Board:
                     a = self.board.index("k") + 10
                     if a in p:
                         self.board[a] = "P"
-                        self.board[100] *= -1
+                        self.board[114] *= -1
                         if self.legal_moves() == set():
                             p.discard(a)
                         self.board[a] = "0"
-                        self.board[100] *= -1
+                        self.board[114] *= -1
                 for i in p:
                     if i > 20:
                         self.board[i] = "Q"
@@ -667,7 +667,7 @@ class Board:
             for i in range(100):
                 if self.board[i] == "0":
                     p.add(i)
-            if self.board[108] != 0:
+            if self.board[107] != 0:
                 for i in p:
                     self.board[i] = "q"
                     if self.is_check_wking():
@@ -675,7 +675,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("R*"+self.sfen_num(i))
-            if self.board[109] != 0:
+            if self.board[108] != 0:
                 for i in p:
                     self.board[i] = "q"
                     if self.is_check_wking():
@@ -683,7 +683,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("B*"+self.sfen_num(i))
-            if self.board[110] != 0:
+            if self.board[109] != 0:
                 for i in p:
                     self.board[i] = "q"
                     if self.is_check_wking():
@@ -691,7 +691,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("G*"+self.sfen_num(i))
-            if self.board[111] != 0:
+            if self.board[110] != 0:
                 for i in p:
                     self.board[i] = "q"
                     if self.is_check_wking():
@@ -699,7 +699,7 @@ class Board:
                         continue
                     self.board[i] = "0"
                     s.add("S*"+self.sfen_num(i))
-            if self.board[112] != 0:
+            if self.board[111] != 0:
                 for i in p:
                     if i < 80:
                         self.board[i] = "q"
@@ -708,7 +708,7 @@ class Board:
                             continue
                         self.board[i] = "0"
                         s.add("N*"+self.sfen_num(i))
-            if self.board[113] != 0:
+            if self.board[112] != 0:
                 for i in p:
                     if i < 90:
                         self.board[i] = "q"
@@ -717,7 +717,7 @@ class Board:
                             continue
                         self.board[i] = "0"
                         s.add("L*"+self.sfen_num(i))
-            if self.board[114] != 0:
+            if self.board[113] != 0:
                 for i in range(100):
                     if self.board[i] == "p":
                         n = i % 10
@@ -729,11 +729,11 @@ class Board:
                     a = self.board.index("K") - 10
                     if a in p:
                         self.board[a] = "p"
-                        self.board[100] *= -1
+                        self.board[114] *= -1
                         if self.legal_moves() == set():
                             p.discard(a)
                         self.board[a] = "0"
-                        self.board[100] *= -1
+                        self.board[114] *= -1
                 for i in p:
                     if i < 90:
                         self.board[i] = "q"
@@ -750,7 +750,7 @@ class Board:
         b = Board()
         b.board = self.board.copy()
         if turn is not None:
-            b.board[100] = turn
+            b.board[114] = turn
         for i in b.legal_moves():
             if i[1] == "*" or len(i) == 5:
                 continue
