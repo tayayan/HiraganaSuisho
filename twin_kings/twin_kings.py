@@ -1,10 +1,10 @@
-#評価値を閾値にしたusiリレープログラム
+#後手玉2枚でも将棋AIを動くようにした
 from Board import *
 import time
 import subprocess
 import threading
 
-class Relay: #リレー用の変数
+class Relay: #共有変数
     switch = 0
     score1 = 0
     score2 = 0
