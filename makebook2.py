@@ -1,13 +1,72 @@
 from Board import *
+from dataclasses import dataclass
 import random
 import time
 import datetime
 import threading
 import subprocess
+import json
+import os
 
 #Copyright (c) tayayan
 #Released under the MIT license
 #https://opensource.org/licenses/mit-license.php
+
+config_path = "config.json"
+
+@dataclass
+class Config:
+    engine: str
+    readbook: str
+    book_fix: str
+    basesfen: str
+    nodes: str
+    resign_value: str
+    draw: str
+    thread: str
+
+    @staticmethod
+    def create():
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf8") as f:
+                config_dict = json.load(f)
+        else:
+            config_dict = {}
+
+        #エンジンパス指定
+        if not config_dict.get("engine"):
+            config_dict["engine"] = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
+
+        #定跡読み込み
+        if config_dict.get("readbook") is None:
+            config_dict["readbook"] = input("やねうら王dbファイルをロードする場合、パスを入力してね（例：standard_book.db）\n")
+
+        if config_dict["readbook"][-3:] == ".db" and config_dict.get("book_fix") is None:
+            config_dict["book_fix"] = input("定跡の穴探索モード？ b:先手定跡の穴を探す w:後手定跡の穴を探す それ以外:通常モード\n")
+
+        #初期局面（ここから連続対局する）
+        if config_dict.get("basesfen") is None:
+            config_dict["basesfen"] = input("usi棋譜（position startposから始まる文字列）を入力してね。入力しなければ平手初期局面\n")
+
+        #探索ノード数
+        if not config_dict.get("nodes"):
+            config_dict["nodes"] = input("探索ノード数を入力してね（例：20000000）\n")
+
+        #投了値
+        if not config_dict.get("resign_value"):
+            config_dict["resign_value"] = input("投了値を入力してね（例：300）\n")
+
+        #千日手処理
+        if config_dict.get("draw") is None:
+            config_dict["draw"] = input("千日手はどうする？ b:先手負け w:後手負け それ以外:無視\n")
+
+        #スレッド数
+        if not config_dict.get("thread"):
+            config_dict["thread"] = input("並列対局数を入力してね（スレッド数÷4を最大値としてね）\n")
+
+        return Config(**config_dict)
+
+config = Config.create()
 
 class Shogi:
     book = dict()   #定跡データ
@@ -18,13 +77,8 @@ class Shogi:
     kif_total = 0   #連続対局数
     lock = threading.RLock()
 
-    #エンジンパス指定
-    engine = input("将棋エンジン（やねうら王etc）のパスを入力してね\n")
-
-    #定跡読み込み
-    readbook = input("やねうら王dbファイルをロードする場合、パスを入力してね（例：standard_book.db）\n")
-    if readbook[-3:] == ".db":
-        rfile = open(readbook,"r", errors='ignore')
+    if config.readbook[-3:] == ".db":
+        rfile = open(config.readbook,"r", errors='ignore')
         s = rfile.readline() #「#YANEURAOU-DB2016 1.00」をスキップ
         while True:
             s = rfile.readline().strip()
@@ -41,17 +95,14 @@ class Shogi:
             else:
                 book[sfen] = {move:1}
                 
-        book_fix = input("定跡の穴探索モード？ b:先手定跡の穴を探す w:後手定跡の穴を探す それ以外:通常モード\n")
-        if book_fix == "b" or book_fix == "w":
+        if config.book_fix == "b" or config.book_fix == "w":
             book0 = dict()
             for i in book:
-                if i.split()[-3] == book_fix:
+                if i.split()[-3] == config.book_fix:
                     book0[i] = book[i]
             book = dict()
     
-    #初期局面（ここから連続対局する）
-    basesfen = input("usi棋譜（position startposから始まる文字列）を入力してね。入力しなければ平手初期局面\n")
-    basesfen = basesfen[9:]
+    basesfen = config.basesfen[9:]
     if len(basesfen) < 13:
         basesfen = "startpos moves"
     else:
@@ -61,15 +112,6 @@ class Shogi:
             sfen = sfen[:sfen.rindex(" ")+1] + "0"
             book[sfen] = {i:1000}
             bookboard.push(i)
-
-    #探索ノード数
-    nodes = input("探索ノード数を入力してね（例：20000000）\n")
-
-    #投了値
-    resign_value = input("投了値を入力してね（例：300）\n")
-
-    #千日手処理
-    draw = input("千日手はどうする？ b:先手負け w:後手負け それ以外:無視\n")
 
     #保存ファイルに日時を付ける
     t_delta = datetime.timedelta(hours=9)
@@ -86,14 +128,14 @@ class Shogi:
             shogi.stdin.flush()
 
         #将棋エンジン（やねうら王）を立ち上げる
-        shogi = subprocess.Popen(Shogi.engine, stdin=subprocess.PIPE,
+        shogi = subprocess.Popen(config.engine, stdin=subprocess.PIPE,
                                                stdout=subprocess.PIPE,
                                                encoding="cp932")
 
         #初期オプション指定
         usi("setoption name Threads value 4") #1スレッドが一番効率いいけど、同じ棋譜が生じやすいので4とする
         usi("setoption name USI_Hash value 1024")
-        usi("setoption name ResignValue value " + Shogi.resign_value)
+        usi("setoption name ResignValue value " + config.resign_value)
         usi("isready")
 
         #初期設定
@@ -116,7 +158,7 @@ class Shogi:
             #なければ探索して指す
             else:
                 usi("position " + sfen)
-                usi("go nodes " + Shogi.nodes)
+                usi("go nodes " + config.nodes)
                 while True:
                     line = shogi.stdout.readline()
                     if line[:8] == "bestmove":
@@ -177,8 +219,8 @@ class Shogi:
                     print("千日手")
                     
                     #定跡保存    
-                    if Shogi.draw == "b" or Shogi.draw == "w":
-                        loseturn = Shogi.draw
+                    if config.draw == "b" or config.draw == "w":
+                        loseturn = config.draw
                         bookpass = 0
                         for i in reversed(tempbook):
                             if i[0].split()[-3] == loseturn and bookpass == 0:
@@ -220,7 +262,7 @@ class Shogi:
             #終局していないので1手進める
             board.push(bestmove)
 
-thread = int(input("並列対局数を入力してね（スレッド数÷4を最大値としてね）\n"))
+thread = int(config.thread)
 
 print("\n「makekif」  コマンド：現在までの棋譜ファイル手動作成")
 print("「makebook」 コマンド：現在までの定跡ファイル手動作成")
