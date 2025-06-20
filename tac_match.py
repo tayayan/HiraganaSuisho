@@ -168,6 +168,8 @@ def bt_match2(board):
         return "向かい飛車"
     elif tac_andmatch(board, "sfen 9/9/9/9/9/9/7P1/4R4/9 b - 1"):
         return "中飛車"
+    elif tac_andmatch(board, "sfen 9/1r5b1/9/6p2/2P6/9/2N6/1BR6/2S6 b - 1"):
+        return "嬉野流"
     elif tac_andmatch(board, "sfen 2sgk4/1r5s1/3ppp3/6p2/5B3/9/9/9/9 w - 1"):
         return "筋違い角"
     else:
@@ -185,6 +187,8 @@ def sente_tac_match(board):
         s.add("角換わり37手目基本図")
     if tac_andmatch(board, "sfen 9/1r7/9/9/5N1P1/9/2S6/7R1/5G3 b Bb 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/5SS2/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/3K5/4K4 b - 1"):
         s.add("4五桂速攻")
+    if tac_andmatch(board, "sfen ln1gk1snl/1rs3gb1/p1ppppppp/9/1p5P1/P8/1PPPPPP1P/1BG3SR1/LNS1KG1NL w - 10"):
+        s.add("AlphaZero流相掛かり")
     if tac_andmatch(board, "sfen lnsgk1snl/6g2/p1ppppb1p/6R2/9/1rP6/P2PPPP1P/1BG1K4/LNS2GSNL w 3P2p 18"):
         s.add("横歩取り青野流")
     if tac_andmatch(board, "sfen lnsgk1snl/6g2/p1ppppb1p/6R2/9/1rP6/P2PPPP1P/1BGK5/LNS2GSNL w 3P2p 18"):
@@ -192,6 +196,12 @@ def sente_tac_match(board):
     if tac_andmatch(board, "sfen lnsgk1snl/6g2/p1pppp+R1p/9/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w B3P2p 18"):
         s.add("竹部スペシャル")
     #対振りの作戦
+    if tac_andmatch(board, "sfen lnsgkgsnl/4r2+B1/pppp1p1pp/4p1p2/7P1/2P6/PP1PPPP1P/7R1/LNSGKGSNL w B 8"):
+        s.add("丸山ワクチン") 
+    if tac_andmatch(board, "sfen 9/4r4/6b2/9/4p2P1/2P6/3PPPS2/1B1K3R1/2SG1G3 w - 1"):
+        s.add("超速3七銀")
+    if tac_andmatch(board, "sfen lnsgkgsnl/4r2b1/pppp1p1pp/4p1p2/7P1/2P6/PP1PPPP1P/1B2G2R1/LNSGK1SNL w - 8"):
+        s.add("5八金右超急戦") 
     if tac_andmatch(board, "sfen 9/9/9/9/9/9/4S4/2K1GS3/3G5 b - 1"):
         s.add("5七銀左急戦")     
     if tac_andmatch(board, "sfen 9/9/6b2/5p3/5P3/4P4/9/2K4R1/9 b - 1") and tac_ormatch(board, "sfen 9/5rr2/9/9/9/9/9/9/9 b - 1"):
@@ -201,6 +211,10 @@ def sente_tac_match(board):
         s.add("早石田")
     if tac_andmatch(board, "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1BR6/LNSGKGSNL w - 2"):
         s.add("7八飛戦法")
+    if tac_andmatch(board, "sfen 9/1r7/9/9/9/2PB5/1P1P5/1R7/3GKGS2 b - 1"):
+        s.add("天彦流向かい飛車")
+    if tac_andmatch(board, "sfen lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/1PP6/P2PPPPPP/1B5R1/LNSGKGSNL w - 4"):
+        s.add("角頭歩")
     return s
 
 def gote_tac_match(board):
@@ -209,6 +223,10 @@ def gote_tac_match(board):
     #居飛車の作戦
     if tac_andmatch(board, "sfen 1r7/3g5/9/9/9/9/9/9/9 b - 1"):
         s.add("6二金・8一飛車型")
+    if tac_andmatch(board, "sfen 1r7/3g5/9/9/9/9/9/9/9 b - 1"):
+        s.add("相掛かり横歩取らせ")
+    if tac_andmatch(board, "sfen lnsgk1snl/1r4gb1/p1pppp1pp/6pR1/1p7/2P6/PP1PPPP1P/1BG6/LNS1KGSNL b P 13"):
+        s.add("横歩取り2三歩戦法")
     if tac_andmatch(board, "sfen lnsgk1snl/6g2/p1ppppb1p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL b 3P2p 17"):
         s.add("横歩取り3三角戦法")
     if tac_andmatch(board, "sfen lnsgk1s1l/6gb1/p1ppppn1p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL b 3P2p 17"):
@@ -219,7 +237,11 @@ def gote_tac_match(board):
         s.add("横歩取り4五角戦法")
     if tac_andmatch(board, "sfen lnsgk2nl/6gs1/p1ppppb1p/9/1r7/2P3R2/PP1PPPP1P/1BG6/LNS1KGSNL b 2P2p 21"):
         s.add("横歩取り8五飛戦法")
+    if tac_andmatch(board, "sfen 3gk1s2/1r5b1/2n2p3/2p3p2/1p7/2P6/2S6/2G4R1/9 b - 1") and tac_ormatch(board, "sfen 2s6/2ss5/9/9/9/9/9/9/9 b - 1") and tac_ormatch(board, "sfen 9/7b1/6b2/9/9/9/9/9/9 b - 1"):
+        s.add("対矢倉右桂速攻")
     #対振りの作戦
+    if tac_andmatch(board, "sfen 3g1gs2/1r3k1b1/2sppp3/6p2/1p2P4/9/9/1B2R4/9 w - 1"):
+        s.add("後手超速")  
     if tac_andmatch(board, "sfen 5g3/3sg1k2/4s4/9/9/9/9/9/9 b - 1"):
         s.add("5三銀左急戦") 
     if tac_andmatch(board, "sfen 9/1r4k2/9/4p4/3p5/3P5/2B6/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/2RR5/9 b - 1"):
@@ -227,6 +249,8 @@ def gote_tac_match(board):
     #振り飛車の作戦
     if tac_andmatch(board, "sfen lnsgkgsnl/6rb1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 3"):
         s.add("2手目3二飛戦法")
+    if tac_andmatch(board, "sfen 9/7r1/6gp1/9/7P1/9/9/7R1/9 b Bb 1"):
+        s.add("阪田流向かい飛車")
     if tac_andmatch(board, "sfen 9/7r1/5p1p1/5b3/7P1/9/9/1B5R1/9 b - 1"):
         s.add("菜々河流向かい飛車")
     return s
@@ -235,7 +259,9 @@ def tac_match(board):
     #共通作戦判定（先後判定必要）
     s = set()
     #居飛車の作戦
-    if tac_andmatch(board, "sfen 9/9/9/9/9/7S1/9/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/7R1/7R1/7R1 b - 1"):
+    if tac_andmatch(board, "sfen 9/9/9/9/9/7S1/9/1B5R1/4KG3 b - 1"):
+        s.add("原始棒銀")
+    elif tac_andmatch(board, "sfen 9/9/9/9/9/7S1/9/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/7R1/7R1/7R1 b - 1"):
         s.add("棒銀")
     if tac_andmatch(board, "sfen 9/9/9/9/9/5SP2/5P3/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/7R1/7R1/7R1/7R1 b - 1"):
         s.add("早繰り銀")
@@ -243,15 +269,27 @@ def tac_match(board):
         s.add("腰掛け銀")
     if tac_andmatch(board, "sfen 9/9/9/9/9/9/9/5R3/9 b - 1") and not tac_ormatch(board, "sfen 9/9/9/9/9/9/9/6KK1/5KK2 b - 1"):
         s.add("右四間飛車")
+    if tac_andmatch(board, "sfen 9/9/9/9/9/6P2/9/6R2/9 b - 1") and not tac_ormatch(board, "sfen 9/9/9/9/9/9/9/7K1/5KK2 b - 1"):
+        s.add("袖飛車")
     if tac_andmatch(board, "sfen 9/9/9/9/9/7R1/9/9/9 b - 1") and not tac_ormatch(board, "sfen 9/9/9/9/9/9/7P1/9/9 b - 1"):
         s.add("浮き飛車")
+    if tac_andmatch(board, "sfen 9/9/9/9/9/9/9/2G6/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/1RR6/9/9/9 b - 1") and not tac_ormatch(board, "sfen 9/9/9/9/7P1/7P1/1PP4P1/9/9 b - 1"):
+        s.add("ひねり飛車")
     if tac_andmatch(board, "sfen 9/9/9/9/9/9/9/8R/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/8L/8L/9/9 b - 1"):
         s.add("雀刺し")
     #対振り専用の作戦
     if tac_andmatch(board, "sfen 9/9/6b2/5p3/5N3/9/5P3/1BK4R1/9 b - 1") and tac_ormatch(board, "sfen 9/5rr2/9/9/9/9/9/9/9 b - 1"):
         s.add("ポンポン桂")
+    if tac_andmatch(board, "sfen 9/9/9/6r2/9/9/7G1/7R1/9 b - 1"):
+        s.add("棒金")
+    if tac_andmatch(board, "sfen 9/9/9/9/9/9/2NSS4/1R7/9 b - 1") and tac_ormatch(board, "sfen 9/4rrrr1/9/9/9/9/9/9/9 b - 1"):
+        s.add("ショーダンシステム")
+    if tac_andmatch(board, "sfen 9/9/6b2/5p3/5P1P1/6P2/3PP1N2/1BK1GS1R1/2SG5 b - 1") and tac_ormatch(board, "sfen 9/5rr2/9/9/9/9/9/9/9 b - 1"):
+        s.add("へなちょこ急戦")
     if tac_andmatch(board, "sfen 9/9/9/9/7P1/4P1PRP/5PN2/1BKGG4/2S6 b - 1") and tac_ormatch(board, "sfen 9/5rr2/9/9/9/9/9/9/9 b - 1"):
         s.add("金無双急戦")
+    if tac_andmatch(board, "sfen 9/4r4/6b2/9/4p2P1/9/2PPPPS2/1B1K3R1/2SG1G3 w - 1"):
+        s.add("居合抜き超速")
     #振り飛車の作戦
     if tac_andmatch(board, "sfen 9/9/9/9/9/2PP5/9/3R5/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/5KKK1/4K1KKK b - 1"):
         s.add("ノーマル四間飛車")
@@ -263,10 +301,24 @@ def tac_match(board):
         s.add("角交換三間飛車")
     if tac_andmatch(board, "sfen 9/1r7/9/9/9/2P6/3P5/4R4/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/4P4/4P4/9/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/5KKK1/4K1KKK b - 1"):
         s.add("ゴキゲン中飛車")
+    if tac_andmatch(board, "sfen 9/9/9/9/9/7P1/9/9/3GKG3 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/1RRR5/9 b - 1"):
+        s.add("陽動振り飛車")
+    if tac_andmatch(board, "sfen 2sgkg3/7r1/ppppppspp/6p2/9/9/9/1S5R1/3GKG3 b Bb 1"):
+        s.add("ダイレクト向かい飛車")
+    if tac_andmatch(board, "sfen 9/1r7/9/9/1pP6/3P5/1PBS5/1RG6/9 b - 1"):
+        s.add("メリケン向かい飛車")
+    if tac_andmatch(board, "sfen 9/9/9/9/9/9/2S6/3R4L/7NK b B 1"):
+        s.add("レグスペ")
+    if tac_andmatch(board, "sfen 9/1r7/9/9/2PP5/9/9/1BGR5/2S6 b - 1"):
+        s.add("立石流四間飛車")
     if tac_andmatch(board, "sfen 9/9/9/9/2P6/2R6/7P1/9/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/5KKK1/4K1KKK b - 1"):
         s.add("石田流")
     if tac_andmatch(board, "sfen 9/9/9/9/9/9/B1P6/4R4/9 b - 1") and tac_ormatch(board, "sfen 9/9/9/9/9/9/9/5KKK1/4K1KKK b - 1"):
         s.add("端角中飛車")
+    if tac_andmatch(board, "sfen 9/7b1/5p3/6p2/9/3P5/1PP1PPPP1/1B5R1/2SGKGS2 b - 1"):
+        s.add("パックマン")
+    if tac_andmatch(board, "sfen 9/7b1/5p3/6p2/9/3P5/1PP1PPPP1/1BS4R1/3GKGS2 b - 1"):
+        s.add("シン・パックマン")
     return s
 
 def invert_sfen(sfen):
@@ -301,50 +353,56 @@ if "moves" in position:
     b = Board(position[:position.index("moves")-1])
     position = position.split()
     moves = position[position.index("moves")+1:]
-    for move in moves:
+else:
+    b = Board(position)
+    moves = ["hoge"]
+    
+for move in moves:
+    if move != "hoge":
         b.push(move)
-        if b.turn() == -1: #先手が指した局面
-            #戦型判定
-            if bt == "":
-                bt = bt_match1(b)
-                if bt != "":
-                    print("戦型：" + bt + "(" + str(b.ply()-1) + "手目)")
-                elif sente_bt == "":
-                    sente_bt = bt_match2(b)
-                    if sente_bt != "":
-                        print("戦型（先手）：" + sente_bt + "(" + str(b.ply()-1) + "手目)")
-            #作戦判定
-            sente_tac = sente_tac_match(b) | tac_match(b)
-            s = sente_tac - sente_tac2
-            if s != set():
-                print("作戦（先手）：" + "、".join(s) + "(" + str(b.ply()-1) + "手目)")
-            sente_tac2 |= sente_tac
-            #囲い判定
-            sente_enc = enc_match(b)
-            if sente_enc != sente_enc2 and sente_enc != "":
-                print("囲い（先手）：" + sente_enc + "(" + str(b.ply()-1) + "手目)")
-                sente_enc2 = sente_enc
+    if b.turn() == -1: #先手が指した局面
+        #戦型判定
+        if bt == "":
+            bt = bt_match1(b)
+            if bt != "":
+                print("戦型：" + bt + "(" + str(b.ply()-1) + "手目)")
+            elif sente_bt == "":
+                sente_bt = bt_match2(b)
+                if sente_bt != "":
+                    print("戦型（先手）：" + sente_bt + "(" + str(b.ply()-1) + "手目)")
+        #作戦判定
+        sente_tac = sente_tac_match(b) | tac_match(b)
+        s = sente_tac - sente_tac2
+        if s != set():
+            print("作戦（先手）：" + "、".join(s) + "(" + str(b.ply()-1) + "手目)")
+        sente_tac2 |= sente_tac
+        #囲い判定
+        sente_enc = enc_match(b)
+        if sente_enc != sente_enc2 and sente_enc != "":
+            print("囲い（先手）：" + sente_enc + "(" + str(b.ply()-1) + "手目)")
+            sente_enc2 = sente_enc
 
-        elif b.turn() == 1: #後手が指した局面
-            b2 = Board(invert_sfen(b.sfen()))
-            #戦型判定            
-            if bt == "":
-                bt = bt_match1(b)
-                if bt != "":
-                    print("戦型：" + bt + "(" + str(b.ply()-1) + "手目)")
-                elif gote_bt == "":
-                    gote_bt = bt_match2(b2)
-                    if gote_bt != "":
-                        print("戦型（後手）：" + gote_bt + "(" + str(b.ply()-1) + "手目)")
-            #作戦判定
-            gote_tac = gote_tac_match(b) | tac_match(b2)
-            s = gote_tac - gote_tac2
-            if s != set():
-                print("作戦（後手）：" + "、".join(s) + "(" + str(b.ply()-1) + "手目)")
-            gote_tac2 |= gote_tac
-            #囲い判定
-            gote_enc = enc_match(b2)
-            if gote_enc != gote_enc2 and gote_enc != "":
-                print("囲い（後手）：" + gote_enc + "(" + str(b.ply()-1) + "手目)")
-                gote_enc2 = gote_enc
+    elif b.turn() == 1: #後手が指した局面
+        b2 = Board(invert_sfen(b.sfen()))
+        #戦型判定            
+        if bt == "":
+            bt = bt_match1(b)
+            if bt != "":
+                print("戦型：" + bt + "(" + str(b.ply()-1) + "手目)")
+            elif gote_bt == "":
+                gote_bt = bt_match2(b2)
+                if gote_bt != "":
+                    print("戦型（後手）：" + gote_bt + "(" + str(b.ply()-1) + "手目)")
+        #作戦判定
+        gote_tac = gote_tac_match(b) | tac_match(b2)
+        s = gote_tac - gote_tac2
+        if s != set():
+            print("作戦（後手）：" + "、".join(s) + "(" + str(b.ply()-1) + "手目)")
+        gote_tac2 |= gote_tac
+        #囲い判定
+        gote_enc = enc_match(b2)
+        if gote_enc != gote_enc2 and gote_enc != "":
+            print("囲い（後手）：" + gote_enc + "(" + str(b.ply()-1) + "手目)")
+            gote_enc2 = gote_enc
+    
 input()
