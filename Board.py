@@ -9,6 +9,7 @@ class Board:
         #100～106 先手持駒
         #107～113 後手持駒
         #114 手番(1:先手, -1:後手)
+        #115 手数
         self.base = ["","","","","","","","","","","",
                      "l","n","s","g","k","g","s","n","l","/",
                      "0","r","0","0","0","0","0","b","0","/",
@@ -19,7 +20,7 @@ class Board:
                      "P","P","P","P","P","P","P","P","P","/",
                      "0","B","0","0","0","0","0","R","0","/",
                      "L","N","S","G","K","G","S","N","L",
-                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1]
         self.board = self.base.copy()
         #局面履歴
         self.hand = []
@@ -67,7 +68,7 @@ class Board:
                 sfen2 += str(piece.pop(0))
         if sfen2 == "":
             sfen2 = "-"
-        sfen3 = str(len(self.history))
+        sfen3 = str(self.board[115])
         return "sfen " + sfen0 + " " + sfen1 + " " + sfen2 + " " + sfen3
 
     def position(self):
@@ -83,7 +84,7 @@ class Board:
         return self.board[114]
 
     def ply(self):
-        return len(self.history)
+        return self.board[115]
     
     def is_sennichite(self):
         return self.board[11:115] in self.history[:-1]
@@ -160,6 +161,7 @@ class Board:
                         self.board[113] = p
                     sfen2 = sfen2[1:]
                     p = ""
+            self.board[115] = int(position[position.index("sfen")+4])
         self.hand = []
         self.history = [self.board[11:115]]
         if "moves" in position:
@@ -254,6 +256,7 @@ class Board:
                 self.board[move_to] = move[0].lower()
         self.hand.append(move)
         self.board[114] *= -1
+        self.board[115] += 1
         self.history.append(self.board[11:115])
         
     def pop(self):
@@ -263,6 +266,7 @@ class Board:
             del self.history[-1]
             self.board[11:115] = self.history[-1]
             del self.hand[-1]
+            self.board[115] -= 1
             
     #合法手生成関係
     def direction_N(self, board_num):
