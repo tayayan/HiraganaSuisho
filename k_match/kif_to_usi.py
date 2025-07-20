@@ -94,7 +94,7 @@ def csa_to_usi(csa_string):
 
     moves = ["position startpos", "moves"]
     board = [""]*100
-    board[11],board[19],board[22],board[82],board[28],board[88],board[19],board[99] = "KY","KY","KA","HI","HI","KA","KY","KY"
+    board[11],board[91],board[22],board[82],board[28],board[88],board[19],board[99] = "KY","KY","KA","HI","HI","KA","KY","KY"
     csa = csa_string.split("\n")
     for line in csa:
         if line == "":
