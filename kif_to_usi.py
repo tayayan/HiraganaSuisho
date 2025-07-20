@@ -1,6 +1,6 @@
 #KIF形式、CSA形式をUSI形式の棋譜にする
 
-def kif_to_sfen(kif_string):
+def kif_to_usi(kif_string):
     def sfen_num(board_num):
         num = board_num[0] + board_num[1].translate(str.maketrans({'1':'a','2':'b','3':'c','4':'d','5':'e','6':'f','7':'g','8':'h','9':'i'}))
         return num
@@ -42,7 +42,7 @@ def kif_to_sfen(kif_string):
                 moves[0] = "position sfen 4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
             continue
         line_list = line.split()
-        if line_list[0] == str(n):
+        if line_list and line_list[0] == str(n):
             n += 1
             third = ""
             move = line_list[1]
@@ -58,7 +58,7 @@ def kif_to_sfen(kif_string):
 
             if move == "同":
                 move = line_list[2]
-                if "成" in move:
+                if move[move.index("(")-1] == "成":
                     third = "+"
                 first = sfen_num(move[move.index("(")+1:move.index(")")])
             elif "打" in move:
@@ -68,17 +68,17 @@ def kif_to_sfen(kif_string):
                 second = borad_num(move[:2])
             else:
                 first = sfen_num(move[move.index("(")+1:move.index(")")])
-                if "成" in move:
+                if move[move.index("(")-1] == "成":
                     third = "+"
                 second = borad_num(move[:2])
             moves.append(first + second + third)
 
     if moves[-1] == moves[-2]:
         del moves[-1]
-    sfen = " ".join(moves)
-    return sfen
+    usi = " ".join(moves)
+    return usi
 
-def csa_to_sfen(csa_string):
+def csa_to_usi(csa_string):
     def sfen_num(board_num):
         num = board_num[0] + board_num[1].translate(str.maketrans({'1':'a','2':'b','3':'c','4':'d','5':'e','6':'f','7':'g','8':'h','9':'i'}))
         return num
@@ -128,5 +128,5 @@ def csa_to_sfen(csa_string):
             
     if moves[-1] == moves[-2]:
         del moves[-1]
-    sfen = " ".join(moves)
-    return sfen
+    usi = " ".join(moves)
+    return usi
