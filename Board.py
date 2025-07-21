@@ -167,6 +167,8 @@ class Board:
         if "moves" in position:
             moves = position[position.index("moves")+1:]
             for move in moves:
+                if move == "resign" or move == "rep_draw" or move == "draw" or move == "win" or move == "break" or move == "timeout":
+                    break
                 self.push(move)
             
     def board_num(self, sfen_num):
