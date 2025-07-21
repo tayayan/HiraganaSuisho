@@ -20,16 +20,16 @@ def kif_to_usi(kif_string):
         if "手合割：" in line:
             if "平手" in line:
                 moves[0] = "position startpos"
-            elif "香落ち" in line:
-                moves[0] = "position sfen lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+            elif "飛香落ち" in line:
+                moves[0] = "position sfen lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
             elif "右香落ち" in line:
                 moves[0] = "position sfen 1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+            elif "香落ち" in line:
+                moves[0] = "position sfen lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"            
             elif "角落ち" in line:
                 moves[0] = "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
             elif "飛車落ち" in line:
-                moves[0] = "position sfen lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
-            elif "飛香落ち" in line:
-                moves[0] = "position sfen lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+                moves[0] = "position sfen lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"            
             elif "二枚落ち" in line:
                 moves[0] = "position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
             elif "四枚落ち" in line:
@@ -46,14 +46,23 @@ def kif_to_usi(kif_string):
             n += 1
             third = ""
             move = line_list[1]
-            if move == "投了":
+            if move == "投了" or move == "反則負け":
                 moves.append("resign")
                 continue
             elif move == "千日手":
                 moves.append("rep_draw")
                 continue
-            elif move == "入玉勝ち":
+            elif move == "持将棋":
+                moves.append("draw")
+                continue
+            elif move == "入玉勝ち" or move == "入玉宣言":
                 moves.append("win")
+                continue
+            elif move == "中断":
+                moves.append("break")
+                continue
+            elif move == "切れ負け":
+                moves.append("timeout")
                 continue
 
             if move == "同":
