@@ -136,6 +136,8 @@ def csa_to_usi(csa_string):
             moves.append("rep_draw")
         elif line == "%KACHI":
             moves.append("win")
+        elif line == "%TIME_UP":
+            moves.append("timeout")
             
     if moves[-1] == moves[-2]:
         del moves[-1]
